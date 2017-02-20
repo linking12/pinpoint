@@ -217,6 +217,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.navercorp.pinpoint</groupId>
+			<artifactId>pinpoint-saluki-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.navercorp.pinpoint</groupId>
 			<artifactId>pinpoint-activemq-client-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
