@@ -14,7 +14,7 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor1;
+import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.quancheng.pinpoint.plugin.saluki.SalukiConstants;
 import com.quancheng.saluki.core.common.Constants;
 import com.quancheng.saluki.core.common.RpcContext;
@@ -23,7 +23,7 @@ import com.quancheng.saluki.core.common.RpcContext;
  * @author shimingliu 2017年2月20日 下午6:31:27
  * @version SalukiConsumerInterceptor.java, v 0.0.1 2017年2月20日 下午6:31:27 shimingliu
  */
-public class SalukiConsumerInterceptor implements AroundInterceptor1 {
+public class SalukiConsumerInterceptor implements AroundInterceptor {
 
     private final MethodDescriptor descriptor;
     private final TraceContext     traceContext;
@@ -34,7 +34,7 @@ public class SalukiConsumerInterceptor implements AroundInterceptor1 {
     }
 
     @Override
-    public void before(Object target, Object arg0) {
+    public void before(Object target, Object[] args) {
         Trace trace = this.getTrace(target);
         if (trace == null) {
             return;
@@ -59,7 +59,7 @@ public class SalukiConsumerInterceptor implements AroundInterceptor1 {
     }
 
     @Override
-    public void after(Object target, Object arg0, Object result, Throwable throwable) {
+    public void after(Object target, Object[] args, Object result, Throwable throwable) {
         Trace trace = this.getTrace(target);
         if (trace == null) {
             return;
@@ -71,7 +71,7 @@ public class SalukiConsumerInterceptor implements AroundInterceptor1 {
                 String endPoint = getProviderServer();
                 recorder.recordEndPoint(endPoint);
                 recorder.recordDestinationId(endPoint);
-                recorder.recordAttribute(SalukiConstants.SALUKI_ARGS_ANNOTATION_KEY, arg0);
+                recorder.recordAttribute(SalukiConstants.SALUKI_ARGS_ANNOTATION_KEY, args[3]);
                 recorder.recordAttribute(SalukiConstants.SALUKI_RESULT_ANNOTATION_KEY, result);
             } else {
                 recorder.recordException(throwable);
