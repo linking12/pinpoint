@@ -6,14 +6,13 @@
 	<parent>
 		<groupId>com.navercorp.pinpoint</groupId>
 		<artifactId>pinpoint-plugins</artifactId>
+		<relativePath>../..</relativePath>
 		<version>1.6.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>pinpoint-saluki-plugin</artifactId>
 	<name>pinpoint-saluki-plugin</name>
-	<url>http://maven.apache.org</url>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+	<packaging>jar</packaging>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.navercorp.pinpoint</groupId>
