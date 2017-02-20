@@ -5,10 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.navercorp.pinpoint</groupId>
-		<artifactId>pinpoint-plugins</artifactId>
+		<artifactId>pinpoint</artifactId>
 		<relativePath>../..</relativePath>
 		<version>1.6.1-SNAPSHOT</version>
 	</parent>
+
+
 	<artifactId>pinpoint-saluki-plugin</artifactId>
 	<name>pinpoint-saluki-plugin</name>
 	<packaging>jar</packaging>
