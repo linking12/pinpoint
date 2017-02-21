@@ -20,8 +20,10 @@ import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
  */
 public interface SalukiConstants {
 
-    ServiceType   SALUKI_PROVIDER_SERVICE_TYPE = ServiceTypeFactory.of(1111, "SALUKI_PROVIDER", RECORD_STATISTICS);
-    ServiceType   SALUKI_CONSUMER_SERVICE_TYPE = ServiceTypeFactory.of(9132, "SALUKI_CONSUMER", RECORD_STATISTICS);
+    ServiceType   SALUKI_PROVIDER_SERVICE_TYPE = ServiceTypeFactory.of(1111, "SALUKI_PROVIDER", "SALUKI",
+                                                                       RECORD_STATISTICS);
+    ServiceType   SALUKI_CONSUMER_SERVICE_TYPE = ServiceTypeFactory.of(9132, "SALUKI_CONSUMER", "SALUKI",
+                                                                       RECORD_STATISTICS);
     AnnotationKey SALUKI_ARGS_ANNOTATION_KEY   = AnnotationKeyFactory.of(92, "saluki.args");
     AnnotationKey SALUKI_RESULT_ANNOTATION_KEY = AnnotationKeyFactory.of(93, "saluki.result");
 
