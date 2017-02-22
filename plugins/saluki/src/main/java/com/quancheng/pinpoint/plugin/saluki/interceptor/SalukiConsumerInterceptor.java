@@ -71,7 +71,7 @@ public class SalukiConsumerInterceptor implements AroundInterceptor {
                 String endPoint = getProviderServer();
                 recorder.recordEndPoint(endPoint);
                 recorder.recordDestinationId(endPoint);
-                recorder.recordAttribute(SalukiConstants.SALUKI_ARGS_ANNOTATION_KEY, args[3]);
+                recorder.recordAttribute(SalukiConstants.SALUKI_ARGS_ANNOTATION_KEY, args[2]);
                 recorder.recordAttribute(SalukiConstants.SALUKI_RESULT_ANNOTATION_KEY, result);
             } else {
                 recorder.recordException(throwable);
@@ -82,14 +82,8 @@ public class SalukiConsumerInterceptor implements AroundInterceptor {
     }
 
     private String getProviderServer() {
-        Object obj = RpcContext.getContext().get(Constants.PROVIDER_ADDRESS);
-        if (obj instanceof InetSocketAddress) {
-            InetSocketAddress provider = (InetSocketAddress) obj;
-            return provider.toString();
-        } else {
-            return new InetSocketAddress(0).toString();
-        }
-
+        InetSocketAddress provider = (InetSocketAddress) RpcContext.getContext().get(Constants.PROVIDER_ADDRESS);
+        return provider.getHostString() + ":" + provider.getPort();
     }
 
     private Trace getTrace(Object target) {

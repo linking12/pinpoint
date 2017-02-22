@@ -20,7 +20,6 @@ import com.quancheng.pinpoint.plugin.saluki.SalukiConstants;
 import com.quancheng.saluki.core.common.Constants;
 import com.quancheng.saluki.core.common.RpcContext;
 import com.quancheng.saluki.core.grpc.server.internal.ServerInvocation;
-import com.quancheng.saluki.core.utils.NetUtils;
 
 /**
  * @author shimingliu 2017年2月20日 下午6:31:44
@@ -70,16 +69,15 @@ public class SalukiProviderInterceptor extends SpanSimpleAroundInterceptor {
         ServerInvocation invocation = (ServerInvocation) target;
         recorder.recordServiceType(SalukiConstants.SALUKI_PROVIDER_SERVICE_TYPE);
         recorder.recordRpcName(invocation.getRpcName());
-        recorder.recordEndPoint(NetUtils.getLocalAddress().toString());
+        recorder.recordEndPoint(invocation.getLocalAddressString());
         recorder.recordRemoteAddress(RpcContext.getContext().getAttachment(Constants.CONSUMER_ADDRESS));
-
         if (!recorder.isRoot()) {
             String parentApplicationName = RpcContext.getContext().getAttachment(SalukiConstants.META_PARENT_APPLICATION_NAME);
             if (parentApplicationName != null) {
                 short parentApplicationType = NumberUtils.parseShort(RpcContext.getContext().getAttachment(SalukiConstants.META_PARENT_APPLICATION_TYPE),
                                                                      ServiceType.UNDEFINED.getCode());
                 recorder.recordParentApplication(parentApplicationName, parentApplicationType);
-                recorder.recordAcceptorHost(NetUtils.getLocalAddress().toString());
+                recorder.recordAcceptorHost(invocation.getLocalAddressString());
             }
         }
 
