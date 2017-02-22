@@ -16,8 +16,8 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.quancheng.pinpoint.plugin.saluki.SalukiConstants;
-import com.quancheng.saluki.core.common.Constants;
 import com.quancheng.saluki.core.common.RpcContext;
+import com.quancheng.saluki.core.grpc.client.internal.AbstractClientInvocation;
 
 /**
  * @author shimingliu 2017年2月20日 下午6:31:27
@@ -65,10 +65,12 @@ public class SalukiConsumerInterceptor implements AroundInterceptor {
             return;
         }
         try {
+            AbstractClientInvocation invocation = (AbstractClientInvocation) target;
             SpanEventRecorder recorder = trace.currentSpanEventRecorder();
             recorder.recordApi(descriptor);
             if (throwable == null) {
-                String endPoint = getProviderServer();
+                InetSocketAddress providerAddress = invocation.getProviderServer();
+                String endPoint = providerAddress.getHostString() + ":" + providerAddress.getPort();
                 recorder.recordEndPoint(endPoint);
                 recorder.recordDestinationId(endPoint);
                 recorder.recordAttribute(SalukiConstants.SALUKI_ARGS_ANNOTATION_KEY, args[2]);
@@ -79,11 +81,6 @@ public class SalukiConsumerInterceptor implements AroundInterceptor {
         } finally {
             trace.traceBlockEnd();
         }
-    }
-
-    private String getProviderServer() {
-        InetSocketAddress provider = (InetSocketAddress) RpcContext.getContext().get(Constants.PROVIDER_ADDRESS);
-        return provider.getHostString() + ":" + provider.getPort();
     }
 
     private Trace getTrace(Object target) {
