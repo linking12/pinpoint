@@ -48,7 +48,6 @@
 		<module>activemq-client</module>
 		<module>cxf</module>
 		<module>hystrix</module>
-		<module>jboss</module>
 		<module>vertx</module>
 		<module>resin</module>
 	</modules>
