@@ -8,8 +8,6 @@ build_image:
   stage: docker-build
   
   script:
-    - echo `git rev-parse --short HEAD` >> bin/git.tag
-    - echo $image
     - cd collector
     - mvn clean package docker:build -DskipTests
     - docker push $aliimage/pinpoint-collector:1.6.1-SNAPSHOT
