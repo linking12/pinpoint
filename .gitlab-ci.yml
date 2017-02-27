@@ -8,6 +8,7 @@ build_image:
   stage: docker-build
   
   script:
+    - mvn clean install
     - cd collector
     - mvn clean package docker:build -DskipTests
     - docker push $aliimage/pinpoint-collector:1.6.1-SNAPSHOT
