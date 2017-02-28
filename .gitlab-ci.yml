@@ -11,10 +11,10 @@ build_image:
     - mvn clean install -Dmaven.test.skip=true
     - cd collector
     - mvn clean package docker:build -DskipTests
-    - docker push $aliimage/pinpoint-collector:1.6.1-SNAPSHOT
+    - docker push $aliimage/pinpoint-collector:1.6.1
     - cd ..
     - cd web
     - mvn clean package docker:build -DskipTests
-    - docker push $aliimage/pinpoint-web:1.6.1-SNAPSHOT
+    - docker push $aliimage/pinpoint-web:1.6.1
   only:
     - master
