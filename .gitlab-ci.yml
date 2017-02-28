@@ -2,8 +2,6 @@ stages:
   - docker-build
 before_script:
   - aliimage=registry.docker.quancheng-ec.com:5000
-  - hostname -i
-  - whoami
 build_image:
   stage: docker-build
   
