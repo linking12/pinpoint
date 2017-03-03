@@ -18,11 +18,13 @@ package com.navercorp.pinpoint.web.alarm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.aliyun.mns.client.AsyncCallback;
 import com.aliyun.mns.client.CloudAccount;
@@ -45,8 +47,17 @@ public class AliyYunMessageSender implements AlarmMessageSender {
 
     private CloudQueue          cloudQueue;
 
+    @Autowired
+    private Properties          properties;
+
     @PostConstruct
     public void init() {
+        String accessKeyId = properties.getProperty("mns.accesskeyid");
+        String accessKeySecret = properties.getProperty("mns.accesskeysecret");
+        String accountEndpoint = properties.getProperty("mns.accountendpoint");
+        ServiceSettings.setMNSAccessKeyId(accessKeyId);
+        ServiceSettings.setMNSAccessKeySecret(accessKeySecret);
+        ServiceSettings.setMNSAccountEndpoint(accountEndpoint);
         CloudAccount account = new CloudAccount(ServiceSettings.getMNSAccessKeyId(),
                                                 ServiceSettings.getMNSAccessKeySecret(),
                                                 ServiceSettings.getMNSAccountEndpoint());
