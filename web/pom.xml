@@ -362,7 +362,7 @@
 				<version>${docker.maven.plugin.version}</version>
 				<configuration>
 					<skipDockerBuild>false</skipDockerBuild>
-					<imageName>registry.docker.quancheng-ec.com:5000/${project.artifactId}:${project.version}</imageName>
+					<imageName>linking12/${project.artifactId}:${project.version}</imageName>
 					<baseImage>tomcat:8-jre8</baseImage>
 					<entryPoint>
 						["/usr/local/bin/start-web.sh"]
@@ -393,8 +393,7 @@
 					<runs>
 						<run>chmod a+x /usr/local/bin/start-web.sh</run>
 						<run>rm -rf /usr/local/tomcat/webapps/*</run>
-						<run>unzip /assets/${project.artifactId}-${project.version}.war
-							-d/usr/local/tomcat/webapps/ROOT</run>
+						<run>unzip /assets/${project.artifactId}-${project.version}.war -d /usr/local/tomcat/webapps/ROOT</run>
 						<run>rm -rf /assets/${project.artifactId}-${project.version}.war</run>
 					</runs>
 				</configuration>
