@@ -19,4 +19,4 @@ build_image:
     - mvn clean package docker:build -DskipTests
     - docker push $aliimage/pinpoint-web:1.6.1-SNAPSHOT
   only:
-    - master
+    - build
