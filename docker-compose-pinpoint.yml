@@ -1,3 +1,11 @@
+pinpoint-zookeeper:
+  container_name: zookeeper
+  hostname: zookeeper
+  image: zookeeper
+  restart: always
+  expose:
+   - "2181"
+
 pinpoint-collector:
   container_name: pinpoint-collector
   hostname: collector
@@ -14,8 +22,10 @@ pinpoint-collector:
     COLLECTOR_UDP_STAT_LISTEN_PORT: 9995
     COLLECTOR_UDP_SPAN_LISTEN_PORT: 9996
     CLUSTER_ENABLE: 'true'
-    CLUSTER_ZOOKEEPER_ADDRESS: 10.42.97.241,10.42.192.27,10.42.149.173
+    CLUSTER_ZOOKEEPER_ADDRESS: zookeeper
     DISABLE_DEBUG: 'true'
+  links:
+    - pinpoint-zookeeper:zookeeper
  
 pinpoint-web:
   container_name: pinpoint-web
@@ -28,10 +38,12 @@ pinpoint-web:
     HBASE_HOST: hb-bp13oa6ij4c30rns5-001.hbase.rds.aliyuncs.com,hb-bp13oa6ij4c30rns5-002.hbase.rds.aliyuncs.com,hb-bp13oa6ij4c30rns5-004.hbase.rds.aliyuncs.com
     HBASE_PORT: 2181
     CLUSTER_ENABLE: 'true'
-    CLUSTER_ZOOKEEPER_ADDRESS: 10.42.97.241,10.42.192.27,10.42.149.173
+    CLUSTER_ZOOKEEPER_ADDRESS: zookeeper
     ADMIN_PASSWORD: admin123
     DISABLE_DEBUG: 'true'
     JDBC_DRIVER: com.mysql.jdbc.Driver
     JDBC_URL: jdbc:mysql://apollo-test-yun.mysql.rds.aliyuncs.com:3306/pinpoint?characterEncoding=UTF-8
     JDBC_USERNAME: qc_test
     JDBC_PASSWORD: Qcwl123456
+  links:
+    - pinpoint-zookeeper:zookeeper
