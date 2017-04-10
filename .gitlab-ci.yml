@@ -7,10 +7,6 @@ build_image:
   
   script:
     - mvn clean install -Dmaven.test.skip=true
-    - cd agent/target/
-    - curl -I --user 'liushiming:Hello899' -X  DELETE http://repo.quancheng-ec.com/repository/documentation/pinpoint-agent-1.6.1-SNAPSHOT.zip
-    - curl -v --user 'liushiming:Hello899' --upload-file pinpoint-agent-1.6.1-SNAPSHOT.zip http://repo.quancheng-ec.com/repository/documentation/
-    - cd ../..
     - cd collector
     - mvn clean package docker:build -DskipTests
     - docker push $aliimage/pinpoint-collector:1.6.1-SNAPSHOT
