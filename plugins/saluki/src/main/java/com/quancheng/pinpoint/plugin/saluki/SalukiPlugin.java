@@ -1,9 +1,8 @@
 /*
- * Copyright (c) 2017, Quancheng-ec.com All right reserved. This software is the
- * confidential and proprietary information of Quancheng-ec.com ("Confidential
- * Information"). You shall not disclose such Confidential Information and shall
- * use it only in accordance with the terms of the license agreement you entered
- * into with Quancheng-ec.com.
+ * Copyright (c) 2017, Quancheng-ec.com All right reserved. This software is the confidential and
+ * proprietary information of Quancheng-ec.com ("Confidential Information"). You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Quancheng-ec.com.
  */
 package com.quancheng.pinpoint.plugin.saluki;
 
@@ -29,81 +28,77 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
  */
 public class SalukiPlugin implements ProfilerPlugin, TransformTemplateAware {
 
-    private final PLogger     logger = PLoggerFactory.getLogger(this.getClass());
+  private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
 
-    private TransformTemplate transformTemplate;
+  private TransformTemplate transformTemplate;
 
-    @Override
-    public void setup(ProfilerPluginSetupContext context) {
-        SalukiConfiguration config = new SalukiConfiguration(context.getConfig());
-        if (!config.isSalukiEnabled()) {
-            logger.info("SalukiPlugin disabled");
-            return;
-        }
-        this.addApplicationTypeDetector(context);
-        this.addTransformers();
+  @Override
+  public void setup(ProfilerPluginSetupContext context) {
+    SalukiConfiguration config = new SalukiConfiguration(context.getConfig());
+    if (!config.isSalukiEnabled()) {
+      logger.info("SalukiPlugin disabled");
+      return;
     }
+    this.addApplicationTypeDetector(context);
+    this.addTransformers();
+  }
 
-    private void addTransformers() {
-        transformTemplate.transform("com.quancheng.saluki.core.grpc.client.internal.AbstractClientInvocation",
-                                    new TransformCallback() {
+  private void addTransformers() {
+    transformTemplate.transform(
+        "com.quancheng.saluki.core.grpc.client.internal.unary.GrpcHystrixCommand",
+        new TransformCallback() {
 
-                                        @Override
-                                        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader,
-                                                                    String className, Class<?> classBeingRedefined,
-                                                                    ProtectionDomain protectionDomain,
-                                                                    byte[] classfileBuffer) throws InstrumentException {
-                                            InstrumentClass target = instrumentor.getInstrumentClass(loader, className,
-                                                                                                     classfileBuffer);
-                                            List<InstrumentMethod> methods = target.getDeclaredMethods(new MethodFilter() {
+          @Override
+          public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader,
+              String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
+              byte[] classfileBuffer) throws InstrumentException {
+            InstrumentClass target =
+                instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+            List<InstrumentMethod> methods = target.getDeclaredMethods(new MethodFilter() {
 
-                                                @Override
-                                                public boolean accept(InstrumentMethod method) {
-                                                    Boolean nameEqual = method.getName().equals("invoke");
-                                                    String[] paramterType = method.getParameterTypes();
-                                                    if (nameEqual && paramterType.length == 3) {
-                                                        return true;
-                                                    } else {
-                                                        return false;
-                                                    }
+              @Override
+              public boolean accept(InstrumentMethod method) {
+                return method.getName().equals("run");
+              }
+            });
+            if (methods.size() == 1) {
+              methods.get(0).addInterceptor(
+                  "com.quancheng.pinpoint.plugin.saluki.interceptor.SalukiConsumerInterceptor");
+            }
+            return target.toBytecode();
+          }
+        });
+    transformTemplate.transform("com.quancheng.saluki.core.grpc.server.internal.ServerInvocation",
+        new TransformCallback() {
 
-                                                }
-                                            });
-                                            if (methods.size() == 1) {
-                                                methods.get(0).addInterceptor("com.quancheng.pinpoint.plugin.saluki.interceptor.SalukiConsumerInterceptor");
-                                            }
-                                            return target.toBytecode();
-                                        }
-                                    });
-        transformTemplate.transform("com.quancheng.saluki.core.grpc.server.internal.ServerInvocation",
-                                    new TransformCallback() {
+          @Override
+          public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader,
+              String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
+              byte[] classfileBuffer) throws InstrumentException {
+            InstrumentClass target =
+                instrumentor.getInstrumentClass(loader, className, classfileBuffer);
 
-                                        @Override
-                                        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader,
-                                                                    String className, Class<?> classBeingRedefined,
-                                                                    ProtectionDomain protectionDomain,
-                                                                    byte[] classfileBuffer) throws InstrumentException {
-                                            InstrumentClass target = instrumentor.getInstrumentClass(loader, className,
-                                                                                                     classfileBuffer);
+            target
+                .getDeclaredMethod("invoke", "com.google.protobuf.Message",
+                    "io.grpc.stub.StreamObserver")
+                .addInterceptor(
+                    "com.quancheng.pinpoint.plugin.saluki.interceptor.SalukiProviderInterceptor");
 
-                                            target.getDeclaredMethod("invoke", "com.google.protobuf.Message",
-                                                                     "io.grpc.stub.StreamObserver").addInterceptor("com.quancheng.pinpoint.plugin.saluki.interceptor.SalukiProviderInterceptor");
+            return target.toBytecode();
+          }
+        });
+  }
 
-                                            return target.toBytecode();
-                                        }
-                                    });
-    }
+  /**
+   * Pinpoint profiler agent uses this detector to find out the service type of current application.
+   */
+  private void addApplicationTypeDetector(ProfilerPluginSetupContext context) {
+    context.addApplicationTypeDetector(new SalukiProviderDetector());
+  }
 
-    /**
-     * Pinpoint profiler agent uses this detector to find out the service type of current application.
-     */
-    private void addApplicationTypeDetector(ProfilerPluginSetupContext context) {
-        context.addApplicationTypeDetector(new SalukiProviderDetector());
-    }
-
-    @Override
-    public void setTransformTemplate(TransformTemplate transformTemplate) {
-        this.transformTemplate = transformTemplate;
-    }
+  @Override
+  public void setTransformTemplate(TransformTemplate transformTemplate) {
+    this.transformTemplate = transformTemplate;
+  }
 
 }
